@@ -1,12 +1,12 @@
 import { useState, FormEvent } from "react";
 import {
   MessageCircle,
-  CheckCircle,
+  // CheckCircle,
   Search,
   FileCheck,
   Handshake,
   Shield,
-  Clock,
+  // Clock,
   Star,
 } from "lucide-react";
 
@@ -24,8 +24,21 @@ function App() {
     notes: "",
   });
 
+  const [budgetError, setBudgetError] = useState("");
+
   const whatsappNumber = "2348130135756";
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
+
+  const formatNumber = (value: string) => {
+    if (!value) return "";
+    const digits = String(value).replace(/\D/g, "");
+    if (!digits) return "";
+    try {
+      return Number(digits).toLocaleString("en-US");
+    } catch {
+      return digits;
+    }
+  };
 
   const handleQuickChat = () => {
     const message = encodeURIComponent("Hello, I want help sourcing a car.");
@@ -35,18 +48,26 @@ function App() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
+    // Check that at least one budget field is filled
+    if (!formData.budget && !formData.customBudget) {
+      setBudgetError("Please select a budget range or enter a custom amount");
+      return;
+    }
+
+    setBudgetError("");
+
     const message = `Hello, I want a car.
 
-*Name:* ${formData.name}
-*Phone:* ${formData.phone}
-*Location:* ${formData.location}
-*Budget:* ${formData.budget}${formData.customBudget ? ` (Custom: ${formData.customBudget})` : ""}
-*Model:* ${formData.model}
-*Condition:* ${formData.condition}
-*Transmission:* ${formData.transmission}
-*Timeline:* ${formData.timeline}
+  *Name:* ${formData.name}
+  *Phone:* ${formData.phone}
+  *Location:* ${formData.location}
+  *Budget:* ${formData.budget}${formData.customBudget ? ` (Custom: ${formatNumber(formData.customBudget)})` : ""}
+  *Model:* ${formData.model}
+  *Condition:* ${formData.condition}
+  *Transmission:* ${formData.transmission}
+  *Timeline:* ${formData.timeline}
 
-Notes: ${formData.notes || "None"}`;
+  Notes: ${formData.notes || "None"}`;
 
     const encodedMessage = encodeURIComponent(message);
     window.open(`${whatsappLink}?text=${encodedMessage}`, "_blank");
@@ -68,18 +89,38 @@ Notes: ${formData.notes || "None"}`;
           <MessageCircle className="w-6 h-6" />
         </button>
       </div>
+      <header className="bg-black bg-center relative">
+        <div className="absolute inset-0 bg-black/15" aria-hidden="true" />
 
-      <section className="bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-stone-100 py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            Find the Right Car{" "}
-            <span className="text-red-600">Within Your Budget</span>
+        {/* image background */}
+
+        <div className="relative max-w-4xl mx-auto px-6 pb-4 flex flex-col items-center text-center text-white">
+          <div className="flex items-center gap-">
+            <span
+              className="text-3xl md:text-6xl tracking-[0.15em] text-white"
+              style={{ fontFamily: '"Racing Sans One"' }}>
+              JK_
+            </span>
+            <span
+              className="text-4xl md:text-6xl tracking-[0.15em] text-red-600"
+              style={{ fontFamily: '"Racing Sans One"' }}>
+              AUTOS
+            </span>
+          </div>
+          <p className="text-stone-300 italic text-sm md:text-lg">
+            Buy Smart. Drive Safe.
+          </p>
+
+          <h1 className="text-4xl md:text-6xl font-bold mt-8 leading-tight">
+            Stop Searching. <span className="text-red-500">Start Driving.</span>
           </h1>
-          <p className="text-lg md:text-xl text-stone-300 mb-10 max-w-2xl mx-auto">
+
+          <p className="text-lg md:text-xl text-stone-200 mb-8 max-w-2xl mx-auto mt-6">
             I help you source verified Nigerian-used and Tokunbo cars based on
             your budget, location, and preferences.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
             <button
               onClick={handleQuickChat}
               className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg">
@@ -93,7 +134,7 @@ Notes: ${formData.notes || "None"}`;
             </button>
           </div>
         </div>
-      </section>
+      </header>
 
       <section className="py-16 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
@@ -136,6 +177,7 @@ Notes: ${formData.notes || "None"}`;
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-neutral-900 mb-16">
             How It Works
+            <div className="w-16 h-[2px] bg-red-600 mx-auto mt-2"></div>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -196,13 +238,14 @@ Notes: ${formData.notes || "None"}`;
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-neutral-900 mb-4">
             Car Request Form
+            <div className="w-16 h-[2px] bg-red-600 mx-auto mt-2"></div>
           </h2>
           <p className="text-center text-neutral-600 mb-10">
             Fill this short form and your request will be sent directly to
             WhatsApp.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 capitalize">
             <div>
               <label className="block text-neutral-900 font-medium mb-2">
                 Name *
@@ -214,7 +257,7 @@ Notes: ${formData.notes || "None"}`;
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none capitalize"
               />
             </div>
 
@@ -244,7 +287,7 @@ Notes: ${formData.notes || "None"}`;
                 onChange={(e) =>
                   setFormData({ ...formData, location: e.target.value })
                 }
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none capitalize"
               />
             </div>
 
@@ -253,27 +296,41 @@ Notes: ${formData.notes || "None"}`;
                 Budget Range *
               </label>
               <select
-                required
                 value={formData.budget}
-                onChange={(e) =>
-                  setFormData({ ...formData, budget: e.target.value })
-                }
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none mb-3">
+                onChange={(e) => {
+                  setFormData({ ...formData, budget: e.target.value });
+                  setBudgetError("");
+                }}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none mb-3 ${
+                  budgetError ? "border-red-500" : "border-stone-300"
+                }`}>
                 <option value="">Select budget range</option>
                 <option value="Under ₦3M">Under ₦3M</option>
                 <option value="₦3M–₦5M">₦3M–₦5M</option>
-                <option value="₦5M–₦8M">₦5M–₦8M</option>
-                <option value="₦8M+">₦8M+</option>
+                <option value="₦5M–₦8M">₦5M–₦10M</option>
+                <option value="₦8M+">₦10M-₦20M</option>
+                <option value="₦8M+">₦20M+</option>
               </select>
               <input
                 type="text"
-                value={formData.customBudget}
-                onChange={(e) =>
-                  setFormData({ ...formData, customBudget: e.target.value })
+                value={
+                  formData.customBudget
+                    ? formatNumber(formData.customBudget)
+                    : ""
                 }
-                placeholder="Or enter custom amount (e.g., ₦4.5M, $15,000)"
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, "");
+                  setFormData({ ...formData, customBudget: digits });
+                  setBudgetError("");
+                }}
+                placeholder="Or enter custom amount (e.g., ₦55,000,000)"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none ${
+                  budgetError ? "border-red-500" : "border-stone-300"
+                }`}
               />
+              {budgetError && (
+                <p className="text-red-600 text-sm mt-2">{budgetError}</p>
+              )}
             </div>
 
             <div>
@@ -288,7 +345,7 @@ Notes: ${formData.notes || "None"}`;
                   setFormData({ ...formData, model: e.target.value })
                 }
                 placeholder="e.g., Toyota Camry, Honda Accord"
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none capitalize"
               />
             </div>
 
@@ -370,7 +427,8 @@ Notes: ${formData.notes || "None"}`;
 
       <section className="py-20 px-6 bg-neutral-900 text-stone-100">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">About Me</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-">About Me</h2>
+          <div className="w-16 h-[2px] bg-red-600 mx-auto mt-2 mb-4"></div>
           <p className="text-lg text-stone-300 mb-8 leading-relaxed">
             I am a car sourcing and vehicle brokerage consultant. I help clients
             find reliable cars within their budget while avoiding common buying
@@ -393,6 +451,7 @@ Notes: ${formData.notes || "None"}`;
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-neutral-900 mb-12">
             Client Feedback
+            <div className="w-16 h-[2px] bg-red-600 mx-auto mt-2"></div>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-lg shadow-md">
@@ -436,6 +495,39 @@ Notes: ${formData.notes || "None"}`;
           Car Sourcing & Brokerage Services
         </p>
         <p className="mb-1">WhatsApp: +234 8130135756</p>
+        <p className="mb-2">
+          Email:{" "}
+          <a href="mailto:jkautosng@gmail.com" className="text-white underline">
+            jkautosng@gmail.com
+          </a>
+        </p>
+        <div className="flex items-center justify-center gap-6 mb-3">
+            <a
+            href="https://www.tiktok.com/@jk_autos?is_from_webapp=1&sender_device=pc"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="TikTok"
+            className="text-white hover:text-red-400">
+            TikTok
+          </a>
+          <a
+            href="https://www.instagram.com/jk__autos/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="text-white hover:text-red-400">
+            Instagram
+          </a>
+        
+          <a
+            href="https://www.facebook.com/profile.php?id=100069569327199"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
+            className="text-white hover:text-red-400">
+            Facebook
+          </a>
+        </div>
         <p className="text-sm">Available: Mon–Sat</p>
       </footer>
     </div>
