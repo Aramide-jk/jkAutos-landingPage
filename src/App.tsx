@@ -81,7 +81,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <div className="fixed bottom-6 right-6 z-50 md:hidden">
+      <div className="fixed bottom-4 right-4 z-50 md:hidden">
         <button
           onClick={handleQuickChat}
           className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
@@ -94,8 +94,8 @@ function App() {
 
         {/* image background */}
 
-        <div className="relative max-w-4xl mx-auto px-6 pb-4 flex flex-col items-center text-center text-white">
-          <div className="flex items-center gap-">
+        <div className="relative max-w-4xl mx-auto px-6 py-4 flex flex-col items-center text-center text-white">
+          <div className="flex items-center gap-4">
             <span
               className="text-3xl md:text-6xl tracking-[0.15em] text-white"
               style={{ fontFamily: '"Racing Sans One"' }}>
@@ -455,35 +455,45 @@ function App() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-lg shadow-md">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-lg">
+                  A
+                </div>
+                <div>
+                  <p className="font-semibold text-neutral-900">Ahmad</p>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
               <p className="text-neutral-700 mb-4">
                 "Smooth process and honest inspection."
               </p>
-              <p className="text-neutral-500 font-medium">
-                — Client Testimonial
-              </p>
             </div>
             <div className="bg-white p-8 rounded-lg shadow-md">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg">
+                  K
+                </div>
+                <div>
+                  <p className="font-semibold text-neutral-900">Kolawole</p>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
               <p className="text-neutral-700 mb-4">
                 "Helped me find a clean car within my budget."
-              </p>
-              <p className="text-neutral-500 font-medium">
-                — Client Testimonial
               </p>
             </div>
           </div>
