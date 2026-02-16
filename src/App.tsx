@@ -19,12 +19,18 @@ function App() {
     customBudget: "",
     model: "",
     condition: "",
+    monthsUsed: "",
     transmission: "",
     timeline: "",
     notes: "",
+    askingPrice: "",
+    mileage: "",
   });
 
   const [budgetError, setBudgetError] = useState("");
+
+  const [mode, setMode] = useState<"buyer" | "seller">("buyer");
+  const [formError, setFormError] = useState("");
 
   const whatsappNumber = "2348130135756";
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
@@ -45,32 +51,67 @@ function App() {
     window.open(`${whatsappLink}?text=${message}`, "_blank");
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setFormError("");
 
-    // Check that at least one budget field is filled
-    if (!formData.budget && !formData.customBudget) {
-      setBudgetError("Please select a budget range or enter a custom amount");
+    if (mode === "buyer") {
+      // Check that at least one budget field is filled
+      if (!formData.budget && !formData.customBudget) {
+        setBudgetError("Please select a budget range or enter a custom amount");
+        return;
+      }
+
+      setBudgetError("");
+
+      const message = `Hello, I want a car.
+
+*Name:* ${formData.name}
+*Phone:* ${formData.phone}
+*Location:* ${formData.location}
+*Budget:* ${formData.budget}${formData.customBudget ? ` (Custom: ${formatNumber(formData.customBudget)})` : ""}
+*Model:* ${formData.model}
+*Condition:* ${formData.condition || "N/A"}
+*Transmission:* ${formData.transmission}
+*Timeline:* ${formData.timeline}
+
+Notes: ${formData.notes || "None"}`;
+
+      const encodedMessage = encodeURIComponent(message);
+      window.open(`${whatsappLink}?text=${encodedMessage}`, "_blank");
       return;
     }
 
-    setBudgetError("");
+    // seller mode — validate required seller fields (photos will be sent later)
+    const missing: string[] = [];
+    if (!formData.askingPrice) missing.push("Asking price");
+    if (!formData.mileage) missing.push("Mileage");
+    if (!formData.model) missing.push("Model");
+    if (!formData.monthsUsed) missing.push("Months used");
 
-    const message = `Hello, I want a car.
+    if (missing.length > 0) {
+      setFormError(`Please provide: ${missing.join(", ")}`);
+      return;
+    }
 
-  *Name:* ${formData.name}
-  *Phone:* ${formData.phone}
-  *Location:* ${formData.location}
-  *Budget:* ${formData.budget}${formData.customBudget ? ` (Custom: ${formatNumber(formData.customBudget)})` : ""}
-  *Model:* ${formData.model}
-  *Condition:* ${formData.condition}
-  *Transmission:* ${formData.transmission}
-  *Timeline:* ${formData.timeline}
+    const message = `Hello, I'm selling my car.
 
-  Notes: ${formData.notes || "None"}`;
+*Name:* ${formData.name}
+*Phone:* ${formData.phone}
+*Location:* ${formData.location}
+*Asking Price:* ${formData.askingPrice ? formatNumber(formData.askingPrice) : "N/A"}
+*Model:* ${formData.model}
+*Mileage:* ${formData.mileage}
+*Months used:* ${formData.monthsUsed}
+*Transmission:* ${formData.transmission}
+*Timeline:* ${formData.timeline}
+
+Photos: Send me the photos of your car.
+Notes: ${formData.notes || "None"}`;
 
     const encodedMessage = encodeURIComponent(message);
     window.open(`${whatsappLink}?text=${encodedMessage}`, "_blank");
+    return;
   };
 
   const scrollToForm = () => {
@@ -217,33 +258,42 @@ function App() {
         </div>
       </section>
 
-      {/* <section className="py-16 px-6 bg-gradient-to-r from-green-500 to-green-600">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Need a car fast?
-          </h2>
-          <p className="text-lg text-green-50 mb-8">
-            Chat with me directly on WhatsApp and tell me what you need.
-          </p>
-          <button
-            onClick={handleQuickChat}
-            className="bg-white hover:bg-stone-100 text-green-600 px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 mx-auto transition-all duration-300 hover:scale-105 shadow-lg">
-            <MessageCircle className="w-5 h-5" />
-            Start WhatsApp Chat
-          </button>
-        </div>
-      </section> */}
-
       <section id="request-form" className="py-20 px-6 bg-white">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-neutral-900 mb-4">
-            Car Request Form
+            {mode === "buyer" ? "Car Request Form" : "Sell Your Car"}
             <div className="w-16 h-[2px] bg-red-600 mx-auto mt-2"></div>
           </h2>
-          <p className="text-center text-neutral-600 mb-10">
-            Fill this short form and your request will be sent directly to
-            WhatsApp.
+          <p className="text-center text-neutral-600 mb-6">
+            {mode === "buyer"
+              ? "Fill this short form and your request will be sent directly to WhatsApp."
+              : "Provide your car details and photos — we'll reach out via WhatsApp."}
           </p>
+
+          <div className="flex justify-center gap-3 mb-6">
+            <button
+              type="button"
+              onClick={() => setMode("buyer")}
+              aria-pressed={mode === "buyer"}
+              className={`px-6 py-2 rounded-full font-semibold transition ${
+                mode === "buyer"
+                  ? "bg-red-600 text-white shadow-md"
+                  : "bg-white border border-stone-200 text-neutral-900"
+              }`}>
+              Find Me a Car
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("seller")}
+              aria-pressed={mode === "seller"}
+              className={`px-6 py-2 rounded-full font-semibold transition ${
+                mode === "seller"
+                  ? "bg-red-600 text-white shadow-md"
+                  : "bg-white border border-stone-200 text-neutral-900"
+              }`}>
+              Sell My Car
+            </button>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6 capitalize">
             <div>
@@ -291,51 +341,88 @@ function App() {
               />
             </div>
 
-            <div>
-              <label className="block text-neutral-900 font-medium mb-2">
-                Budget Range *
-              </label>
-              <select
-                value={formData.budget}
-                onChange={(e) => {
-                  setFormData({ ...formData, budget: e.target.value });
-                  setBudgetError("");
-                }}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none mb-3 ${
-                  budgetError ? "border-red-500" : "border-stone-300"
-                }`}>
-                <option value="">Select budget range</option>
-                <option value="Under ₦3M">Under ₦3M</option>
-                <option value="₦3M–₦5M">₦3M–₦5M</option>
-                <option value="₦5M–₦8M">₦5M–₦10M</option>
-                <option value="₦8M+">₦10M-₦20M</option>
-                <option value="₦8M+">₦20M+</option>
-              </select>
-              <input
-                type="text"
-                value={
-                  formData.customBudget
-                    ? formatNumber(formData.customBudget)
-                    : ""
-                }
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, "");
-                  setFormData({ ...formData, customBudget: digits });
-                  setBudgetError("");
-                }}
-                placeholder="Or enter custom amount (e.g., ₦55,000,000)"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none ${
-                  budgetError ? "border-red-500" : "border-stone-300"
-                }`}
-              />
-              {budgetError && (
-                <p className="text-red-600 text-sm mt-2">{budgetError}</p>
-              )}
-            </div>
+            {mode === "buyer" ? (
+              <div>
+                <label className="block text-neutral-900 font-medium mb-2">
+                  Budget Range *
+                </label>
+                <select
+                  value={formData.budget}
+                  onChange={(e) => {
+                    setFormData({ ...formData, budget: e.target.value });
+                    setBudgetError("");
+                  }}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none mb-3 ${
+                    budgetError ? "border-red-500" : "border-stone-300"
+                  }`}>
+                  <option value="">Select budget range</option>
+                  <option value="Under ₦3M">Under ₦3M</option>
+                  <option value="₦3M–₦5M">₦3M–₦5M</option>
+                  <option value="₦5M–₦8M">₦5M–₦10M</option>
+                  <option value="₦8M+">₦10M-₦20M</option>
+                  <option value="₦8M+">₦20M+</option>
+                </select>
+                <input
+                  type="text"
+                  value={
+                    formData.customBudget
+                      ? formatNumber(formData.customBudget)
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, customBudget: digits });
+                    setBudgetError("");
+                  }}
+                  placeholder="Or enter custom amount (e.g., ₦55,000,000)"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none ${
+                    budgetError ? "border-red-500" : "border-stone-300"
+                  }`}
+                />
+                {budgetError && (
+                  <p className="text-red-600 text-sm mt-2">{budgetError}</p>
+                )}
+              </div>
+            ) : (
+              <div>
+                <label className="block text-neutral-900 font-medium mb-2">
+                  Asking Price
+                </label>
+                <input
+                  type="text"
+                  value={
+                    formData.askingPrice
+                      ? formatNumber(formData.askingPrice)
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, askingPrice: digits });
+                  }}
+                  placeholder="e.g., ₦2,500,000"
+                  className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none mb-3"
+                />
+                <label className="block text-neutral-900 font-medium mb-2">
+                  Mileage (km)
+                </label>
+                <input
+                  type="text"
+                  value={formData.mileage}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      mileage: e.target.value.replace(/\D/g, ""),
+                    })
+                  }
+                  placeholder="e.g., 120000"
+                  className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-neutral-900 font-medium mb-2">
-                Preferred Car Model *
+                Car Model *
               </label>
               <input
                 type="text"
@@ -349,22 +436,60 @@ function App() {
               />
             </div>
 
-            <div>
-              <label className="block text-neutral-900 font-medium mb-2">
-                Condition
-              </label>
-              <select
-                value={formData.condition}
-                onChange={(e) =>
-                  setFormData({ ...formData, condition: e.target.value })
-                }
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none">
-                <option value="">Select condition</option>
-                <option value="Tokunbo">Tokunbo</option>
-                <option value="Nigerian Used">Nigerian Used</option>
-                <option value="Either">Either</option>
-              </select>
-            </div>
+            {/* Car year */}
+            {mode === "buyer" ? (
+              <div>
+                <label className="block text-neutral-900 font-medium mb-2">
+                  Prefered Car Year
+                </label>
+                <input
+                  type="number"
+                  min="1980"
+                  max={new Date().getFullYear()}
+                  value={formData.monthsUsed}
+                  onChange={(e) =>
+                    setFormData({ ...formData, monthsUsed: e.target.value })
+                  }
+                  placeholder="e.g., 2015"
+                  className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                />
+              </div>
+            ) : null}
+
+            {mode === "seller" ? (
+              <div>
+                <label className="block text-neutral-900 font-medium mb-2">
+                  Number of months used
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.monthsUsed}
+                  onChange={(e) =>
+                    setFormData({ ...formData, monthsUsed: e.target.value })
+                  }
+                  placeholder="e.g., 36"
+                  className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none"
+                />
+              </div>
+            ) : (
+              <div>
+                <label className="block text-neutral-900 font-medium mb-2">
+                  Condition
+                </label>
+                <select
+                  value={formData.condition}
+                  onChange={(e) =>
+                    setFormData({ ...formData, condition: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none">
+                  <option value="">Select condition</option>
+                  <option value="Tokunbo">Tokunbo</option>
+                  <option value="Local used">Local used</option>
+                  <option value="Either">Either</option>
+                </select>
+              </div>
+            )}
 
             <div>
               <label className="block text-neutral-900 font-medium mb-2">
@@ -400,6 +525,11 @@ function App() {
               </select>
             </div>
 
+            <p className="text-sm text-red-600 mt-2">
+              Kindly send the clear photos of the car after sending this
+              information.
+            </p>
+
             <div>
               <label className="block text-neutral-900 font-medium mb-2">
                 Extra Notes (Optional)
@@ -415,11 +545,24 @@ function App() {
               />
             </div>
 
+            {formError && (
+              <p className="text-red-600 text-sm mt-2">{formError}</p>
+            )}
+
             <button
               type="submit"
               className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg">
-              <MessageCircle className="w-5 h-5" />
-              Send Request via WhatsApp
+              {mode === "buyer" ? (
+                <>
+                  <MessageCircle className="w-5 h-5" />
+                  Send Request via WhatsApp
+                </>
+              ) : (
+                <>
+                  <FileCheck className="w-5 h-5" />
+                  Send Sell Info via WhatsApp
+                </>
+              )}
             </button>
           </form>
         </div>
@@ -512,7 +655,7 @@ function App() {
           </a>
         </p>
         <div className="flex items-center justify-center gap-6 mb-3">
-            <a
+          <a
             href="https://www.tiktok.com/@jk_autos?is_from_webapp=1&sender_device=pc"
             target="_blank"
             rel="noopener noreferrer"
@@ -528,7 +671,7 @@ function App() {
             className="text-white hover:text-red-400">
             Instagram
           </a>
-        
+
           <a
             href="https://www.facebook.com/profile.php?id=100069569327199"
             target="_blank"
