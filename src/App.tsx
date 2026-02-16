@@ -525,11 +525,6 @@ Notes: ${formData.notes || "None"}`;
               </select>
             </div>
 
-            <p className="text-sm text-red-600 mt-2">
-              Kindly send the clear photos of the car after sending this
-              information.
-            </p>
-
             <div>
               <label className="block text-neutral-900 font-medium mb-2">
                 Extra Notes (Optional)
@@ -547,6 +542,13 @@ Notes: ${formData.notes || "None"}`;
 
             {formError && (
               <p className="text-red-600 text-sm mt-2">{formError}</p>
+            )}
+
+            {mode === "seller" && (
+              <p className="text-sm text-red-600 mt-2">
+                Kindly send the clear photos of the car after sending this
+                information.
+              </p>
             )}
 
             <button
