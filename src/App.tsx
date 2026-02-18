@@ -131,13 +131,21 @@ Notes: ${formData.notes || "None"}`;
         </button>
       </div>
       <header className="bg-black bg-center relative">
+        {/* logo */}
+       
+       
         <div className="absolute inset-0 bg-black/15" aria-hidden="true" />
 
         {/* image background */}
 
         <div className="relative max-w-4xl mx-auto px-6 py-4 flex flex-col items-center text-center text-white">
-          <div className="flex items-center gap-4">
-            <span
+          <div className="flex items-center justify-center gap-4">
+             <img
+            src="/logo.png"
+            alt="JK Autos"
+            className="top-4 margin-auto w-50 h-18 md:w-50 md:h-32 object-contain"
+          />
+            {/* <span
               className="text-3xl md:text-6xl tracking-[0.15em] text-white"
               style={{ fontFamily: '"Racing Sans One"' }}>
               JK_
@@ -146,13 +154,13 @@ Notes: ${formData.notes || "None"}`;
               className="text-4xl md:text-6xl tracking-[0.15em] text-red-600"
               style={{ fontFamily: '"Racing Sans One"' }}>
               AUTOS
-            </span>
+            </span> */}
           </div>
-          <p className="text-stone-300 italic text-sm md:text-lg">
+          {/* <p className="text-stone-300 italic text-sm md:text-lg">
             Buy Smart. Drive Safe.
-          </p>
+          </p> */}
 
-          <h1 className="text-4xl md:text-6xl font-bold mt-8 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold mt- leading-tight">
             Stop Searching. <span className="text-red-500">Start Driving.</span>
           </h1>
 
