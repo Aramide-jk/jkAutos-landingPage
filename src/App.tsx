@@ -160,11 +160,11 @@ Notes: ${formData.notes || "None"}`;
             Buy Smart. Drive Safe.
           </p> */}
 
-          <h1 className="text-4xl md:text-6xl font-bold mt- leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold my-3 leading-tight">
             Stop Searching. <span className="text-red-500">Start Driving.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-stone-200 mb-8 max-w-2xl mx-auto mt-6">
+          <p className="text-lg md:text-xl text-stone-200 mb-8 max-w-2xl mx-auto mt-">
             I help you source verified Nigerian-used and Tokunbo cars based on
             your budget, location, and preferences.
           </p>
